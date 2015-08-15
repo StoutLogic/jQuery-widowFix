@@ -52,6 +52,9 @@
 
 				if (contentArray.length <= 1) {
 					// it's a one word element, abort!
+					if (wfOptions.linkFix) {
+						replaceLink();
+					}
 					return;
 				}
 
@@ -63,60 +66,38 @@
 					}
 				}
 				checkSpace();
+
+				function replaceLink() {
+					if (wfOptions.linkFix) {
+						// Replace our temporary <var> tag with the orginal <a> tag
+						$this.find('var').each(function(){
+							$(this).contents().replaceWith($lastLink);
+							$(this).contents().unwrap();
+						});
+					}
 				}
 				
 				var prevWord = contentArray[contentArray.length-1];
 
-				//if linkFix is on, check for the letter limit
-				if (wfOptions.linkFix) {
-					//if the last word is longer than the limit, stop the script
-					if (wfOptions.letterLimit !== null &&
-						linkFixLastWord.length >= wfOptions.letterLimit
-						) {
+				//if the last word is longer than the limit, stop the script
+				if (wfOptions.letterLimit !== null &&
+						linkFixLastWord.length >= wfOptions.letterLimit) 
+				{
+						replaceLink();
+						return;
+				} 
 
-							$this.find('var').each(function(){
-								$(this).contents().replaceWith($lastLink);
-								$(this).contents().unwrap();
-							});
-							return;
-
-					//or if the prev word is longer than the limit
-					} else if (wfOptions.prevLimit !== null &&
-							   prevWord.length >= wfOptions.prevLimit
-							   ) {
-									$this.find('var').each(function(){
-										$(this).contents().replaceWith($lastLink);
-										$(this).contents().unwrap();
-									});
-									return;
-					}
-
-
-				} else {
-					//if the last word is longer than the limit, stop the script
-					if (wfOptions.letterLimit !== null &&
-						lastWord.length >= wfOptions.letterLimit
-						) {
-							return;
-					} else if (wfOptions.prevLimit !== null &&
-						prevWord.length >= wfOptions.prevLimit
-						) {
-							return;
-					}
+				//or if the prev word is longer than the limit
+				else if (wfOptions.prevLimit !== null &&
+						   	 prevWord.length >= wfOptions.prevLimit) 
+				{
+						replaceLink();
+						return;
 				}
 
 				var content = contentArray.join(' ') + '&nbsp;' + lastWord;
-				$this.html(content);
-
-				if (wfOptions.linkFix) {
-
-					//find the var and put the anchor back in, then unwrap the <var>
-					$this.find('var').each(function(){
-						$(this).contents().replaceWith($lastLink);
-						$(this).contents().unwrap();
-					});
-				}
-
+				$this.html(content);				
+				replaceLink();
 			});
 
 		}
