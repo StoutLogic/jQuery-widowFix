@@ -23,8 +23,7 @@
 		var defaults = {
 			letterLimit: null,
 			prevLimit: null,
-			linkFix: false,
-			dashes: false
+			linkFix: false
 		};
 
 		var wfOptions = $.extend(defaults, userOptions);
@@ -64,22 +63,6 @@
 					}
 				}
 				checkSpace();
-				
-				// if contains a dash, use white-space nowrap to stop breaking
-				if (wfOptions.dashes) {
-					
-					// all 3 dash types: regular, en, em
-					var dashes = ['-','–','—'];
-				
-					$.each(dashes, function(index, dash) {
-
-						if ( lastWord.indexOf(dash) > 0 ) {
-							lastWord = '<span style="white-space:nowrap;">' + lastWord + '</span>';
-							return false; // break out early
-						}
-						
-					});
-				
 				}
 				
 				var prevWord = contentArray[contentArray.length-1];
